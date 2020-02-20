@@ -12,7 +12,7 @@ var getArtistNames = function(artist) {
 };
 
 // Function for running a Spotify search
-var getMeSpotify = function(songName) {
+var getSpotify = function(songName) {
   if (songName === undefined) {
     songName = "What's my age again";
   }
@@ -42,7 +42,7 @@ var getMeSpotify = function(songName) {
   );
 };
 
-var getMyBands = function(artist) {
+var getBands = function(artist) {
   var queryURL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
 
   axios.get(queryURL).then(
@@ -58,26 +58,16 @@ var getMyBands = function(artist) {
 
       for (var i = 0; i < jsonData.length; i++) {
         var show = jsonData[i];
-
-        // Print data about each concert
-        // If a concert doesn't have a region, display the country instead
-        // Use moment to format the date
+        
         console.log(
-          show.venue.city +
-            "," +
-            (show.venue.region || show.venue.country) +
-            " at " +
-            show.venue.name +
-            " " +
-            moment(show.datetime).format("MM/DD/YYYY")
+          show.venue.city + "," + (show.venue.region || show.venue.country) + " at " show.venue.name + " " + moment(show.datetime).format("MM/DD/YYYY")
         );
       }
     }
   );
 };
 
-// Function for running a Movie Search
-var getMeMovie = function(movieName) {
+var getMovie = function(movieName) {
   if (movieName === undefined) {
     movieName = "Mr Nobody";
   }
@@ -102,12 +92,13 @@ var getMeMovie = function(movieName) {
   );
 };
 
-// Function for running a command based on text file
 var doWhatItSays = function() {
   fs.readFile("random.txt", "utf8", function(error, data) {
     console.log(data);
 
-    var dataArr = data.split(",");
+   data = data.replace(/"/g,"")
+
+  var dataArr = data.split(",");
 
     if (dataArr.length === 2) {
       pick(dataArr[0], dataArr[1]);
@@ -117,17 +108,16 @@ var doWhatItSays = function() {
   });
 };
 
-// Function for determining which command is executed
 var pick = function(caseData, functionData) {
   switch (caseData) {
   case "concert-this":
-    getMyBands(functionData);
+    getBands(functionData);
     break;
   case "spotify-this-song":
-    getMeSpotify(functionData);
+    getSpotify(functionData);
     break;
   case "movie-this":
-    getMeMovie(functionData);
+    getMovie(functionData);
     break;
   case "do-what-it-says":
     doWhatItSays();
@@ -137,11 +127,8 @@ var pick = function(caseData, functionData) {
   }
 };
 
-// Function which takes in command line arguments and executes correct function accordingly
 var runThis = function(argOne, argTwo) {
   pick(argOne, argTwo);
 };
 
-// MAIN PROCESS
-// =====================================
 runThis(process.argv[2], process.argv.slice(3).join(" "));
